@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>運動計時器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="images/favicon.ico" rel="shortcut icon" />
+    <meta charset="UTF-8" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.0.2/vue.global.js"></script>
+  </head>
+  <body class="bg-lighter">
+    <div class="container main my-5">
+      <div class="row">
+        <main class="col post">
+          <div id="app">
+            <h2 v-if="currentExerciseIndex < 0">運動計時器</h2>
+            <div>
+              <table>
+                <tr v-for="row in calendarRows" style="border: 1px solid">
+                  <td v-for="date in row" style="border: 1px solid">
+                    <div
+                      v-if="calendar.includes(date.toISOString().substr(0, 10))"
+                    >
+                      &#x25cf;
+                    </div>
+                    <br />
+                    {{ date.getMonth() + 1 }}月 {{ date.getDate() }}日
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div
+              v-if="currentExerciseIndex >= 0"
+              style="
+                display: flex;
+                flex-direction: column;
+                text-align: center;
+                justify-content: center;
+              "
+            >
+              <p style="font-size: 100px">
+                剩餘時間: {{timeRemaining}} 秒/ 總花費時長:{{total/60}} 分
+              </p>
+              <img
+                :src="currentExerciseImage"
+                :alt="currentExerciseImage"
+                width="1900"
+                height="730"
+              />
+            </div>
+            <br /><br />
+            <button @click="startTimer">開始</button>
+            <button @click="pauseTimer">暫停</button>
+            <button @click="continueTimer">繼續</button>
+            <br /><br />
+            <div class="exercise-container">
+              <div
+                v-for="(exercise, index) in exercises"
+                v-if="currentExerciseIndex < 0"
+              >
+                <div
+                  style="
+                    width: 450px;
+                    display: flex;
+                    flex-direction: column;
+                    border: 1px solid;
+                    margin-right: 3px;
+                    font-size: large;
+                    text-align: center;
+                  "
+                >
+                  {{exercise.name}} - {{exercise.duration}} seconds
+                  <img
+                    :src="exercise.image"
+                    :alt="exercise.name"
+                    fit="cover"
+                    height="200"
+                  />
+                  <button @click="changeDuration(index)" class="shape-ex3">
+                    <p>更改時長</p>
+                  </button>
+                </div>
+                <br />
+              </div>
+            </div>
+          </div>
+          <style>
+            .shape-ex3 {
+              height: 40px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              cursor: pointer;
+              line-height: 40px;
+              color: #000;
+              background-color: transparent;
+              border: 1px solid #000;
+              position: relative;
+              transition: all 0.3s linear;
+            }
+            .shape-ex3 > p {
+              position: relative;
+              z-index: 1;
+            }
+            .shape-ex3::before {
+              content: '';
+              width: 0%;
+              height: 100%;
+              display: block;
+              background-color: #f00;
+              position: absolute;
+              top: 0;
+              left: 0;
+              transition: all 0.3s ease;
+            }
+            .shape-ex3:hover {
+              color: #fff;
+            }
+            .shape-ex3:hover::before {
+              width: 100%;
+            }
+            .exercise-container {
+              display: flex;
+              align-items: center;
+              flex-wrap: wrap;
+              width: 100%;
+              flex-direction: row;
+            }
+          </style>
+          <script type="module">
+            const app = Vue.createApp({
+              data() {
+                return {
+                  exercises: [
+                    { name: '1', duration: 60, image: '1.PNG' },
+                    { name: '2', duration: 60, image: '2.PNG' },
+                    { name: '3', duration: 120, image: '3.PNG' },
+                    { name: '4', duration: 60, image: '4.PNG' },
+                    { name: '5', duration: 30, image: '5.PNG' },
+                    { name: '6', duration: 30, image: '6.PNG' },
+                    { name: '7', duration: 60, image: '7.PNG' },
+                    { name: '8', duration: 60, image: '8.PNG' },
+                    { name: '9', duration: 120, image: '9.PNG' },
+                    { name: '10', duration: 120, image: '10.PNG' },
+                    { name: '11', duration: 45, image: '11.PNG' },
+                    { name: '12', duration: 45, image: '12.PNG' },
+                    { name: '13', duration: 45, image: '13.PNG' },
+                    { name: '14', duration: 60, image: '14.PNG' },
+                    { name: '15', duration: 120, image: '15.PNG' },
+                    { name: '16', duration: 120, image: '16.PNG' },
+                    { name: '17', duration: 120, image: '17.PNG' },
+                    { name: '18', duration: 120, image: '18.PNG' },
+                    { name: '19', duration: 120, image: '19.PNG' },
+                    { name: '20', duration: 120, image: '20.PNG' },
+                    { name: '21', duration: 120, image: '21.PNG' },
+                    { name: '22', duration: 90, image: '22.PNG' },
+                    { name: '23', duration: 120, image: '23.PNG' },
+                    { name: '24', duration: 120, image: '24.PNG' },
+                    { name: '25', duration: 120, image: '25.PNG' },
+                    { name: '26', duration: 90, image: '26.PNG' },
+                    { name: '27', duration: 90, image: '27.PNG' },
+                    { name: '28', duration: 90, image: '28.PNG' },
+                    { name: '29', duration: 90, image: '29.PNG' },
+                    { name: '30', duration: 120, image: '30.PNG' },
+                    { name: '31', duration: 120, image: '31.PNG' },
+                    { name: '32', duration: 120, image: '32.PNG' },
+                    { name: '33', duration: 120, image: '33.PNG' },
+                    { name: '34', duration: 45, image: '34.PNG' },
+                    { name: '35', duration: 120, image: '35.PNG' },
+                    { name: '36', duration: 120, image: '36.PNG' },
+                    { name: '37', duration: 120, image: '37.PNG' },
+                    { name: '38', duration: 120, image: '38.PNG' },
+                    { name: '39', duration: 120, image: '39.PNG' },
+                    { name: '40', duration: 120, image: '40.PNG' },
+                    { name: '41', duration: 90, image: '41.PNG' },
+                    { name: '42', duration: 90, image: '42.PNG' },
+                    { name: '43', duration: 120, image: '43.PNG' },
+                    { name: '44', duration: 120, image: '44.PNG' },
+                    { name: '45', duration: 120, image: '45.PNG' },
+                    { name: '46', duration: 120, image: '46.PNG' },
+                    { name: '47', duration: 120, image: '47.PNG' },
+                  ],
+                  calendar: [],
+                  currentExerciseIndex: -1,
+                  timeRemaining: 0,
+                  intervalId: null,
+                  isTimerRunning: false,
+                  currentExerciseImage: '',
+                  total: 0,
+                };
+              },
+              methods: {
+                startTimer() {
+                  this.currentExerciseIndex = 0;
+                  this.timeRemaining =
+                    this.exercises[this.currentExerciseIndex].duration;
+                  this.total +=
+                    this.exercises[this.currentExerciseIndex].duration;
+                  this.currentExerciseImage =
+                    this.exercises[this.currentExerciseIndex].image;
+                  this.isTimerRunning = true;
+                  this.intervalId = setInterval(() => {
+                    if (this.timeRemaining > 0) {
+                      this.timeRemaining--;
+                    } else if (
+                      this.currentExerciseIndex <
+                      this.exercises.length - 1
+                    ) {
+                      this.currentExerciseIndex++;
+                      this.timeRemaining =
+                        this.exercises[this.currentExerciseIndex].duration;
+                      this.total +=
+                        this.exercises[this.currentExerciseIndex].duration;
+                      this.currentExerciseImage =
+                        this.exercises[this.currentExerciseIndex].image;
+                    } else {
+                      clearInterval(this.intervalId);
+                      this.isTimerRunning = false;
+                    }
+                  }, 1000);
+                },
+                pauseTimer() {
+                  clearInterval(this.intervalId);
+                  this.isTimerRunning = false;
+                  this.remainingTime = this.timeRemaining;
+                },
+                continueTimer() {
+                  if (this.isTimerRunning) return;
+                  this.timeRemaining = this.remainingTime;
+                  this.intervalId = setInterval(() => {
+                    if (this.timeRemaining > 0) {
+                      this.timeRemaining--;
+                    } else if (
+                      this.currentExerciseIndex <
+                      this.exercises.length - 1
+                    ) {
+                      this.currentExerciseIndex++;
+                      this.remainingTime =
+                        this.exercises[this.currentExerciseIndex].duration;
+                      this.timeRemaining = this.remainingTime;
+                      this.total +=
+                        this.exercises[this.currentExerciseIndex].duration;
+                      this.currentExerciseImage =
+                        this.exercises[this.currentExerciseIndex].image;
+                    } else {
+                      clearInterval(this.intervalId);
+                      this.isTimerRunning = false;
+                    }
+                  }, 1000);
+                  this.isTimerRunning = true;
+                },
+                changeDuration(index) {
+                  let newDuration = prompt('Enter new duration in seconds: ');
+                  if (newDuration) {
+                    this.exercises[index].duration = parseInt(newDuration);
+                  }
+                },
+              },
+              watch: {
+                timeRemaining(newVal) {
+                  if (newVal === 6) {
+                    const audio = new Audio('TimerSoundEffect.mp3');
+                    audio.play();
+                    console.log(this.calendar);
+                  }
+                  if (
+                    newVal === 0 &&
+                    this.currentExerciseIndex === this.exercises.length - 1
+                  ) {
+                    this.calendar.push(new Date().toISOString().substr(0, 10));
+                    this.currentExerciseIndex = -1;
+                    clearInterval(this.intervalId);
+                    this.isTimerRunning = false;
+                  }
+                },
+                calendar(newVal) {
+                  localStorage.setItem('calendar', JSON.stringify(newVal));
+                  
+                },
+              },
+              created() {
+                this.calendar = JSON.parse(localStorage.getItem('calendar')) || [];
+                
+                },
+              computed: {
+                calendarRows() {
+                  const rows = [];
+                  let currentRow = [];
+                  const startDate = new Date();
+                  startDate.setDate(1);
+                  const endDate = new Date();
+                  endDate.setMonth(endDate.getMonth() + 1);
+                  endDate.setDate(0);
+                  let date = new Date(startDate);
+                  while (date <= endDate) {
+                    currentRow.push(new Date(date));
+                    if (currentRow.length === 7) {
+                      rows.push(currentRow);
+                      currentRow = [];
+                    }
+                    date.setDate(date.getDate() + 1);
+                  }
+                  if (currentRow.length > 0) {
+                    rows.push(currentRow);
+                  }
+                  return rows;
+                },
+              },
+              mounted() {
+                const vm = this;
+                window.addEventListener('keyup', function (event) {
+                  if (event.code === 'Space') {
+                    if (vm.isTimerRunning) {
+                      vm.pauseTimer();
+                    } else {
+                      vm.continueTimer();
+                    }
+                  }
+                });
+                this.calendar =
+                  JSON.parse(localStorage.getItem('calendar')) || [];
+              },
+            });
+
+            app.mount('#app');
+          </script>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
