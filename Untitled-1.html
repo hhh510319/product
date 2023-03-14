@@ -13,7 +13,7 @@
         <main class="col post">
           <div id="app">
             <h2 v-if="currentExerciseIndex < 0">運動計時器</h2>
-            <div>
+            <div class="table">
               <table>
                 <tr v-for="row in calendarRows" style="border: 1px solid">
                   <td v-for="date in row" style="border: 1px solid">
@@ -53,14 +53,17 @@
             <button @click="pauseTimer">暫停</button>
             <button @click="continueTimer">繼續</button>
             <br /><br />
-            <div class="exercise-container">
+            <div
+              class="exercise-container"
+              style="height: 800px; overflow-y: scroll"
+            >
               <div
                 v-for="(exercise, index) in exercises"
                 v-if="currentExerciseIndex < 0"
               >
                 <div
                   style="
-                    width: 450px;
+                    width: 670px;
                     display: flex;
                     flex-direction: column;
                     border: 1px solid;
@@ -74,7 +77,7 @@
                     :src="exercise.image"
                     :alt="exercise.name"
                     fit="cover"
-                    height="200"
+                    height="400"
                   />
                   <button @click="changeDuration(index)" class="shape-ex3">
                     <p>更改時長</p>
@@ -83,8 +86,29 @@
                 <br />
               </div>
             </div>
+            <footer>
+              <div class="tag">每天鍛煉持之以恆</div>
+            </footer>
           </div>
           <style>
+            .table {
+              background-image: url(header.jpg);
+              background-repeat: no-repeat;
+              background-position: center;
+              background-size: cover;
+              height: 25vh;
+              opacity: 0.8;
+            }
+            td {
+              border: 1px solid black;
+              padding: 10px;
+              text-align: center;
+              background-color: lightgoldenrodyellow;
+            }
+            td div {
+              font-size: 24px;
+              color: red;
+            }
             .shape-ex3 {
               height: 40px;
               display: flex;
@@ -126,6 +150,17 @@
               width: 100%;
               flex-direction: row;
             }
+            .tag {
+              display: flex;
+              background-color: #4caf50;
+              color: white;
+              padding: 12px 24px;
+              border-radius: 20px;
+              font-size: 50px;
+              margin: 30px 0;
+              justify-content: center;
+              align-items: center;
+            }
           </style>
           <script type="module">
             const app = Vue.createApp({
@@ -138,8 +173,8 @@
                     { name: '4', duration: 60, image: '4.PNG' },
                     { name: '5', duration: 30, image: '5.PNG' },
                     { name: '6', duration: 30, image: '6.PNG' },
-                    { name: '7', duration: 60, image: '7.PNG' },
-                    { name: '8', duration: 60, image: '8.PNG' },
+                    { name: '7', duration: 120, image: '7.PNG' },
+                    { name: '8', duration: 120, image: '8.PNG' },
                     { name: '9', duration: 120, image: '9.PNG' },
                     { name: '10', duration: 120, image: '10.PNG' },
                     { name: '11', duration: 45, image: '11.PNG' },
@@ -275,13 +310,12 @@
                 },
                 calendar(newVal) {
                   localStorage.setItem('calendar', JSON.stringify(newVal));
-                  
                 },
               },
               created() {
-                this.calendar = JSON.parse(localStorage.getItem('calendar')) || [];
-                
-                },
+                this.calendar =
+                  JSON.parse(localStorage.getItem('calendar')) || [];
+              },
               computed: {
                 calendarRows() {
                   const rows = [];
